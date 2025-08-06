@@ -109,31 +109,3 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     ax3.plot(jelsiz_mikroorganizma, label="Jelsiz Formda Mikroorganizma", linestyle='--')
     ax3.plot(jelli_mikroorganizma, label="Jel Formunda Mikroorganizma", color='green')
     ax3.set_title("🧊 Mikroorganizmların Jelli ve Jelsiz Formunun Radyasyon Direncine Etkisi")
-    ax3.legend()
-    st.pyplot(fig3)
-
-    # Bitki Simülasyonu
-    bitki_jelli = Bitki(True, biofilm_density, gel_thickness)
-    bitki_jelsiz = Bitki(False)
-
-    for _ in range(cycles):
-        bitki_jelli.radyasyon_maruz_kalma(radiation_level)
-        bitki_jelsiz.radyasyon_maruz_kalma(radiation_level)
-
-    st.markdown("### 🌿 Bitki Kökü Simülasyonu")
-    df = pd.DataFrame({
-        'Kök Durumu': ['Jelsiz Kök', 'Jelli Kök (Biofilm)'],
-        'Hayatta Kalma (%)': [bitki_jelsiz.hayatta_kalma, bitki_jelli.hayatta_kalma]
-    })
-    st.bar_chart(df.set_index('Kök Durumu'))
-
-    # Final Tablo
-    st.markdown("### 📌 Mikroorganizma Hayatta Kalma Tablosu")
-    st.table({
-        'Grup': ["Kontrol Grubu", "Deney Grubu", "Sadece Dsup'a Sahip", "Sadece Melanin'e Sahip", "Dsup+Melanin'e Sahip", "Jelsiz Formda Mikroorganizma", "Jel Formunda Mikroorganizma"],
-        'Hayatta Kalma (%)': [
-            f"{kontrol[-1]:.2f}%", f"{deney[-1]:.2f}%", f"{dsup_only[-1]:.2f}%",
-            f"{melanin_only[-1]:.2f}%", f"{dsup_melanin[-1]:.2f}%",
-            f"{jelsiz_mikroorganizma[-1]:.2f}%", f"{jelli_mikroorganizma[-1]:.2f}%"
-        ]
-    })
