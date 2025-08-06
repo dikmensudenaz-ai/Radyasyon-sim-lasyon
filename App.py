@@ -108,7 +108,7 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     fig3, ax3 = plt.subplots()
     ax3.plot(jelsiz_mikroorganizma, label="Jelsiz mikroorganizma", linestyle='--')
     ax3.plot(jelli_mikroorganizma, label="Jelli mikroorganizma", color='green')
-    ax3.set_title("🧊 Mikroorganizmların Jel Formunun Radyasyon Direncine Etkisi")
+    ax3.set_title("🧊 Mikroorganizmların Jelli ve Jelsiz Formunun Radyasyon Direncine Etkisi")
     ax3.legend()
     st.pyplot(fig3)
 
@@ -128,9 +128,9 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     st.bar_chart(df.set_index('Kök Durumu'))
 
     # Final Tablo
-    st.markdown("### 📌 Final Sonuç Tablosu")
+    st.markdown("### 📌 Mikroorganizma Hayatta Kalma Tablosu")
     st.table({
-        'Grup': ['Kontrol', 'Deney', 'Dsup', 'Melanin', 'Dsup+Melanin', 'Jelsiz-mikroorganizma', 'Jelli-mikroorganizma'],
+        'Grup': ['Kontrol', 'Deney', 'Dsup', 'Melanin', 'Dsup+Melanin', 'Jelsiz-Formda-Mikroorganizma', 'Jelli-Formda-mikroorganizma'],
         'Hayatta Kalma (%)': [
             f"{kontrol[-1]:.2f}%", f"{deney[-1]:.2f}%", f"{dsup_only[-1]:.2f}%",
             f"{melanin_only[-1]:.2f}%", f"{dsup_melanin[-1]:.2f}%",
