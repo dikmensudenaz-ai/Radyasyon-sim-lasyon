@@ -142,148 +142,145 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     st.markdown("- **Biofilm jel:** Fiziksel koruma + hücresel yenilenme avantajı")
     st.markdown(f"**Mikroorganizma Sonuçları:** {test[-1]:.2f}% hayatta kalım | Kontrol: {control[-1]:.2f}%")
     st.markdown(f"**Bitki Sonuçları:** Jel yok: {bitki_jelsiz.hayatta_kalma:.2f}% — Jel var: {bitki_jelli.hayatta_kalma:.2f}%")
-import streamlit as st
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
+        # ——————————————————————————
+    # 1️⃣ Genetik + Jel Formu Karşılaştırması
+    st.subheader("🧪 Genetik + Jel Formu Karşılaştırması")
 
-# 1. Mikroorganizma Modeli
-class BiyoFilmMikroorganizma:
-    def __init__(self, dsup=False, melanin=False, biofilm_density=1.2, gel_thickness=1.0, regrowth_delay=3):
-        self.dsup = dsup
-        self.melanin = melanin
-        self.biofilm_density = biofilm_density
-        self.gel_thickness = gel_thickness
-        self.regrowth_delay = regrowth_delay
-        self.survival_rate = 100
-        self.dna_damage = 0
-        self.regrowth_timer = 0
-        self.repair_efficiency = 0.25 if dsup else 0.15 if melanin else 0.05
+    # Alt senaryolar için biofilm parametrelerini geçici ayarlıyoruz
+    no_gel_params = params.copy()
+    no_gel_params['biofilm_density'] = 0.0
+    no_gel_params['gel_thickness']  = 0.0
 
-    def radiation_exposure(self, radiation_level):
-        resistance = 1
-        damage_factor = 1
-        if self.dsup:
-            resistance *= 2.5
-            damage_factor *= 0.4
-        if self.melanin:
-            resistance *= 1.8
-            damage_factor *= 0.6
-        protection_efficiency = 1 - (self.gel_thickness * self.biofilm_density * 0.1)
-        protection_efficiency = max(0.1, protection_efficiency)
-        effective_radiation = radiation_level * protection_efficiency
-        damage = effective_radiation / resistance
-        dna_damage_increment = (effective_radiation * damage_factor) / resistance
-        self.dna_damage += dna_damage_increment
-        self.survival_rate -= damage
-        self.dna_damage -= self.dna_damage * self.repair_efficiency
-        self.dna_damage = max(self.dna_damage, 0)
-        if self.dna_damage < 70:
-            self.regrowth_timer += 1
-        else:
-            self.regrowth_timer = 0
-        if self.regrowth_timer >= self.regrowth_delay:
-            self.survival_rate = min(self.survival_rate + 5, 100)
-            self.regrowth_timer = 0
-        if self.dna_damage >= 100:
-            self.survival_rate = 0
-        self.survival_rate = max(self.survival_rate, 0)
+    scenarios = {
+        "Dsup (Jelsiz)"            : run_simulation(no_gel_params, True, False),
+        "Dsup (Jelli)"             : run_simulation(params,       True, False),
+        "Melanin (Jelsiz)"         : run_simulation(no_gel_params, False, True),
+        "Melanin (Jelli)"          : run_simulation(params,       False, True),
+        "Dsup+Melanin (Jelsiz)"    : run_simulation(no_gel_params, True, True),
+        "Dsup+Melanin (Jelli)"     : run_simulation(params,       True, True),
+    }
 
-# 2. Simülasyon Fonksiyonu
-def run_simulation(dsup, melanin, biofilm_density, gel_thickness, cycles, radiation_level, cell_count):
-    cells = [BiyoFilmMikroorganizma(dsup, melanin, biofilm_density, gel_thickness) for _ in range(cell_count)]
-    return [np.mean([cell.radiation_exposure(radiation_level) or cell.survival_rate for cell in cells]) for _ in range(cycles)]
+    fig4, ax4 = plt.subplots()
+    for label, curve in scenarios.items():
+        ax4.plot(
+            range(1, params['cycles']+1),
+            curve,
+            marker='o' if "Jelli" in label else 'x',
+            linestyle='-' if "Jelli" in label else '--',
+            label=label
+        )
+    ax4.set_xlabel("Maruziyet Döngüsü")
+    ax4.set_ylabel("Ortalama Hücre Hayatta Kalma (%)")
+    ax4.set_title("Gen + Jel Formu: Hayatta Kalma Karşılaştırması")
+    ax4.legend(loc="lower left", bbox_to_anchor=(1.0, 0.2))
+    ax4.grid(True)
+    st.pyplot(fig4)
+    # ——————————————————————————
+    # ——————————————————————————
+    # 2️⃣ Astronot Kıyafeti Koruması Karşılaştırması
+    st.subheader("🧍‍♂️ Astronot Kıyafeti: Jel ile Koruma Simülasyonu")
 
-# 3. Bitki Modeli
-class Bitki:
-    def __init__(self, sera_jeli=False, kok_jeli=False, kapsul_jeli=False):
-        self.hayatta_kalma = 100.0
-        self.protection = 1.0
-        if sera_jeli:
-            self.protection *= 0.6
-        if kok_jeli:
-            self.protection *= 0.7
-        if kapsul_jeli:
-            self.protection *= 0.5
+    def simulate_astronaut(jelli=False):
+        koruma_katsayisi = 0.35 if jelli else 1.0
+        dna_hasar = 0
+        for _ in range(params['cycles']):
+            etkili_radyasyon = radiation_level * koruma_katsayisi
+            dna_hasar += etkili_radyasyon * 0.6  # Radyasyon hasar katsayısı
+        return max(0, 100 - dna_hasar * 0.2)  # Hayatta kalma %'si gibi varsayım
 
-    def radyasyon_al(self, radyasyon):
-        etkili_radyasyon = radyasyon * self.protection
-        self.hayatta_kalma -= etkili_radyasyon * 0.4
-        self.hayatta_kalma = max(0, self.hayatta_kalma)
+    astronot_jelsiz = simulate_astronaut(jelli=False)
+    astronot_jelli = simulate_astronaut(jelli=True)
 
-# 4. Arayüz
-st.title("🌌 Uzayda Radyasyona Karşı BiyoFilm Simülasyonu")
+    df_astro = pd.DataFrame({
+        'Astronot Türü': ['Standart Kıyafet (Jelsiz)', 'Jel ile Güçlendirilmiş Kıyafet'],
+        'DNA Sağlık (%)': [astronot_jelsiz, astronot_jelli]
+    })
 
-st.sidebar.header("🔬 Parametreler")
-params = {
-    "dsup": st.sidebar.checkbox("🧬 Dsup Geni"),
-    "melanin": st.sidebar.checkbox("🎨 Melanin Geni"),
-    "radiation_level": st.sidebar.slider("☢️ Radyasyon Şiddeti", 10, 200, 50),
-    "cell_count": st.sidebar.number_input("🧫 Hücre Sayısı", 50, 1000, 200),
-    "cycles": st.sidebar.slider("🔁 Maruziyet Döngüsü", 5, 20, 10),
-    "biofilm_density": st.sidebar.slider("🧫 Biofilm Yoğunluğu", 0.5, 2.0, 1.2),
-    "gel_thickness": st.sidebar.slider("🧊 Jel Kalınlığı", 0.1, 2.0, 1.0),
-    "regrowth_delay": st.sidebar.slider("🕒 Yenilenme Döngüsü", 1, 10, 3)
-}
+    fig_astro, ax_astro = plt.subplots()
+    colors = ['gray', 'green']
+    bars = ax_astro.bar(df_astro['Astronot Türü'], df_astro['DNA Sağlık (%)'], color=colors)
+    ax_astro.set_ylim(0, 100)
+    ax_astro.set_ylabel("DNA Sağlık Oranı (%)")
+    ax_astro.set_title("🚀 Jel Takviyeli Kıyafetin Astronot DNA Korumasına Etkisi")
 
-if st.sidebar.button("🚀 Simülasyonu Başlat"):
-    deney = run_simulation(params["dsup"], params["melanin"], params["biofilm_density"], params["gel_thickness"], params["cycles"], params["radiation_level"], params["cell_count"])
-    kontrol = run_simulation(False, False, 0.0, 0.0, params["cycles"], params["radiation_level"], params["cell_count"])
+    for bar in bars:
+        yval = bar.get_height()
+        ax_astro.text(bar.get_x() + bar.get_width()/2, yval + 2, f'{yval:.2f}%', ha='center')
 
-    st.subheader("📊 Deney vs Kontrol")
-    fig1, ax1 = plt.subplots()
-    ax1.plot(deney, label="Deney Grubu", color='blue')
-    ax1.plot(kontrol, label="Kontrol Grubu", linestyle='--', color='red')
-    ax1.set_xlabel("Döngü")
-    ax1.set_ylabel("Hayatta Kalma (%)")
-    ax1.legend()
-    st.pyplot(fig1)
+    st.pyplot(fig_astro)
+    # ——————————————————————————
+    # ——————————————————————————
+    # 3️⃣ Uzay Kapsülü İç Yüzeyi Jel Uygulaması Simülasyonu
+    st.subheader("🛰️ Uzay Kapsülü: Jel ile İç Yüzey Koruma Simülasyonu")
 
-    st.subheader("🧬 Genetik Farklar")
-    dsup_only = run_simulation(True, False, 0.0, 0.0, params["cycles"], params["radiation_level"], params["cell_count"])
-    melanin_only = run_simulation(False, True, 0.0, 0.0, params["cycles"], params["radiation_level"], params["cell_count"])
-    dsup_melanin = run_simulation(True, True, 0.0, 0.0, params["cycles"], params["radiation_level"], params["cell_count"])
+    def kapsul_simulasyon(jelli=False):
+        kapsul_koruma = 0.4 if jelli else 1.0  # %60 oranında radyasyon absorbe eder
+        toplam_hasar = 0
+        for _ in range(params['cycles']):
+            etkili_radyasyon = radiation_level * kapsul_koruma
+            toplam_hasar += etkili_radyasyon * 0.4  # orta seviye hasar katsayısı
+        hayatta_kalma = max(0, 100 - toplam_hasar * 0.25)
+        return hayatta_kalma
 
-    fig2, ax2 = plt.subplots()
-    ax2.plot(dsup_only, label="Dsup")
-    ax2.plot(melanin_only, label="Melanin")
-    ax2.plot(dsup_melanin, label="Dsup+Melanin", linewidth=2)
-    ax2.legend()
-    st.pyplot(fig2)
-
-    st.subheader("🧊 Jel vs Jelsiz Mikroorganizma")
-    jelsiz = run_simulation(True, True, 0.0, 0.0, params["cycles"], params["radiation_level"], params["cell_count"])
-    jelli = run_simulation(True, True, params["biofilm_density"], params["gel_thickness"], params["cycles"], params["radiation_level"], params["cell_count"])
-
-    fig3, ax3 = plt.subplots()
-    ax3.plot(jelsiz, label="Jelsiz Form", linestyle='--', color='orange')
-    ax3.plot(jelli, label="Jelli Form", color='green')
-    ax3.legend()
-    st.pyplot(fig3)
-
-    st.subheader("🛰️ Uzay Kapsülü Koruması")
-    kapsul_jelsiz = max(0, 100 - sum(params["radiation_level"] * 1.0 * 0.4 for _ in range(params["cycles"])) * 0.25)
-    kapsul_jelli = max(0, 100 - sum(params["radiation_level"] * 0.4 * 0.4 for _ in range(params["cycles"])) * 0.25)
+    kapsul_jelsiz = kapsul_simulasyon(False)
+    kapsul_jelli = kapsul_simulasyon(True)
 
     df_kapsul = pd.DataFrame({
-        'Kapsül Durumu': ['Jelsiz', 'Jel Kaplı'],
+        'Koruma Durumu': ['Jelsiz Kapsül', 'İçi Jel ile Kaplanmış Kapsül'],
         'Hayatta Kalma (%)': [kapsul_jelsiz, kapsul_jelli]
     })
-    st.bar_chart(df_kapsul.set_index('Kapsül Durumu'))
 
-    st.subheader("🌱 Bitki Kombinasyonları")
-    kombinasyonlar = {
-        "Korumasız": Bitki(False, False, False),
-        "Sera Jel": Bitki(True, False, False),
-        "Sera+Kök": Bitki(True, True, False),
-        "Full Koruma": Bitki(True, True, True)
+    fig_kapsul, ax_kapsul = plt.subplots()
+    colors = ['gray', 'green']
+    bars = ax_kapsul.bar(df_kapsul['Koruma Durumu'], df_kapsul['Hayatta Kalma (%)'], color=colors)
+    ax_kapsul.set_ylim(0, 100)
+    ax_kapsul.set_ylabel("Hayatta Kalma Oranı (%)")
+    ax_kapsul.set_title("🛰️ Uzay Kapsülünün Jel ile Korunmasının Etkisi")
+
+    for bar in bars:
+        height = bar.get_height()
+        ax_kapsul.text(bar.get_x() + bar.get_width()/2, height + 2, f"{height:.2f}%", ha='center')
+
+    st.pyplot(fig_kapsul)
+    # ——————————————————————————
+    # ——————————————————————————
+    # 4️⃣ Bitki Kombinasyonlu Koruma Simülasyonu
+    st.subheader("🌱 Bitki Koruma Kombinasyonları Simülasyonu")
+
+    def bitki_kombinasyon_simulasyonu(sera_jeli=False, kok_jeli=False, kapsul_jeli=False):
+        total_protection = 1.0
+        if sera_jeli:
+            total_protection *= 0.6  # %40 azaltır
+        if kok_jeli:
+            total_protection *= 0.7  # %30 azaltır
+        if kapsul_jeli:
+            total_protection *= 0.5  # %50 azaltır
+        etkili_radyasyon = radiation_level * total_protection
+        hayatta_kalma = 100 - etkili_radyasyon * 0.4  # etki oranı
+        return max(0, hayatta_kalma)
+
+    scenarios = {
+        "🌱 A | Hiçbir Koruma Yok"              : bitki_kombinasyon_simulasyonu(False, False, False),
+        "🌱 B | Sadece Sera Jel Koruması"       : bitki_kombinasyon_simulasyonu(True, False, False),
+        "🌱 C | Sera + Kök Jel Koruması"        : bitki_kombinasyon_simulasyonu(True, True, False),
+        "🌱 D | Sera + Kök + Kapsül Koruması"   : bitki_kombinasyon_simulasyonu(True, True, True)
     }
-    for bitki in kombinasyonlar.values():
-        for _ in range(params["cycles"]):
-            bitki.radyasyon_al(params["radiation_level"])
 
-    df_bitki = pd.DataFrame({
-        "Koruma": list(kombinasyonlar.keys()),
-        "Hayatta Kalma (%)": [bitki.hayatta_kalma for bitki in kombinasyonlar.values()]
+    df_bitki_koruma = pd.DataFrame({
+        'Koruma Senaryosu': list(scenarios.keys()),
+        'Hayatta Kalma (%)': list(scenarios.values())
     })
-    st.bar_chart(df_bitki.set_index("Koruma"))
+
+    fig_bitki_koruma, ax = plt.subplots()
+    bars = ax.barh(df_bitki_koruma['Koruma Senaryosu'], df_bitki_koruma['Hayatta Kalma (%)'], color='seagreen')
+    ax.set_xlim(0, 100)
+    ax.set_xlabel("Hayatta Kalma Oranı (%)")
+    ax.set_title("🌿 Bitki Koruma Kombinasyonlarının Etkisi")
+
+    for bar in bars:
+        width = bar.get_width()
+        ax.text(width + 1, bar.get_y() + bar.get_height()/2, f'{width:.2f}%', va='center')
+
+    st.pyplot(fig_bitki_koruma)
+    # ——————————————————————————
+    
