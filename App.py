@@ -186,10 +186,8 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
             toplam_hasar += etkili_radyasyon * 0.4  # orta seviye hasar katsayısı
         hayatta_kalma = max(0, 100 - toplam_hasar * 0.25)
         return hayatta_kalma
-
-    kapsul_jelsiz = kapsul_simulasyon(False)
-    kapsul_jelli = kapsul_simulasyon(True)
-
+        kapsul_jelli = simulate_astronaut(jelli=True, radiation_level=params["radiation_level"], cycles=params["cycles"]),
+        kapsul_jelsiz = simulate_astronaut(jelli=False, radiation_level=params["radiation_level"], cycles=params["cycles"]),
     df_kapsul = pd.DataFrame({
         'Koruma Durumu': ['Jelsiz Kapsül', 'İçi Jel ile Kaplanmış Kapsül'],
         'Hayatta Kalma (%)': [kapsul_jelsiz, kapsul_jelli]
