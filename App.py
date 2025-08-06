@@ -130,7 +130,7 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     # Final Tablo
     st.markdown("### 📌 Mikroorganizma Hayatta Kalma Tablosu")
     st.table({
-        'Grup': ['Kontrol Grubu', 'Deney Grubu', 'Sadece Dsup'a Sahip', 'Sadece Melanin'e Sahip', 'Dsup+Melanin'e Sahip ', 'Jelsiz Formda Mikroorganizma', 'Jelli Formda Mikroorganizma'],
+        'Grup': ['Kontrol Grubu', 'Deney Grubu', 'Sadece Dsup/'a Sahip', 'Sadece Melanin/'e Sahip', 'Dsup+Melanin/'e Sahip ', 'Jelsiz Formda Mikroorganizma', 'Jelli Formda Mikroorganizma'],
         'Hayatta Kalma (%)': [
             f"{kontrol[-1]:.2f}%", f"{deney[-1]:.2f}%", f"{dsup_only[-1]:.2f}%",
             f"{melanin_only[-1]:.2f}%", f"{dsup_melanin[-1]:.2f}%",
