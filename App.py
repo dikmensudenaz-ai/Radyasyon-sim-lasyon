@@ -84,8 +84,8 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     dsup_only = run_simulation(True, False, 0.0, 0.0, cycles, radiation_level, cell_count)
     melanin_only = run_simulation(False, True, 0.0, 0.0, cycles, radiation_level, cell_count)
     dsup_melanin = run_simulation(True, True, 0.0, 0.0, cycles, radiation_level, cell_count)
-    jelsiz = run_simulation(True, True, 0.0, 0.0, cycles, radiation_level, cell_count)
-    jelli = run_simulation(True, True, biofilm_density, gel_thickness, cycles, radiation_level, cell_count)
+    jelsiz mikroorganizma = run_simulation(True, True, 0.0, 0.0, cycles, radiation_level, cell_count)
+    jelli mikroorganizma = run_simulation(True, True, biofilm_density, gel_thickness, cycles, radiation_level, cell_count)
 
     # Grafikler
     fig, ax = plt.subplots()
