@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# Mikroorganizma modeli
+# --- SINIF TANIMLARI ---
 class BiyoFilmMikroorganizma:
     def __init__(self, dsup=False, melanin=False, biofilm_density=1.2, gel_thickness=1.0,
                  regrowth_delay=3, dsup_effect=2.5, melanin_effect=1.8, biofilm_shield=0.1):
@@ -49,7 +49,6 @@ class BiyoFilmMikroorganizma:
             self.survival_rate = 0
         self.survival_rate = max(self.survival_rate, 0)
 
-# Simülasyon fonksiyonu
 def run_simulation(params, dsup, melanin):
     cells = [
         BiyoFilmMikroorganizma(
@@ -67,19 +66,16 @@ def run_simulation(params, dsup, melanin):
         survival_rates.append(avg)
     return survival_rates
 
-# Uzay kapsülü simülasyonu
 def kapsul_simulasyon(jelli, params):
     koruma = 0.4 if jelli else 1.0
     toplam_hasar = sum(params['radiation_level'] * koruma * 0.4 for _ in range(params['cycles']))
     return max(0, 100 - toplam_hasar * 0.25)
 
-# Astronot simülasyonu
 def simulate_astronaut(jelli, radiation_level, cycles):
     koruma_katsayisi = 0.4 if jelli else 1.0
     toplam_hasar = sum(radiation_level * koruma_katsayisi for _ in range(cycles))
     return max(0, 100 - toplam_hasar * 0.25)
 
-# Bitki koruma kombinasyonu
 def bitki_kombinasyon_simulasyonu(sera_jeli, kok_jeli, kapsul_jeli, radiation_level):
     koruma = 1.0
     if sera_jeli: koruma *= 0.6
@@ -88,7 +84,6 @@ def bitki_kombinasyon_simulasyonu(sera_jeli, kok_jeli, kapsul_jeli, radiation_le
     etkili_radyasyon = radiation_level * koruma
     return max(0, 100 - etkili_radyasyon * 0.4)
 
-# Arayüz
 st.set_page_config(layout="wide")
 st.title("🌌 BiyoFilm Jel + Genetik Koruma Simülasyonu")
 
@@ -106,50 +101,54 @@ params = {
 }
 
 if st.sidebar.button("🚀 Simülasyonu Başlat"):
-
-    # Ana deney ve kontrol
+    # Deney ve Kontrol
     deney = run_simulation(params, True, True)
     kontrol = run_simulation(params, False, False)
 
-    # Grafik 1
-    st.subheader("🧬 Deney vs Kontrol")
-    fig1, ax1 = plt.subplots()
-    ax1.plot(deney, label="Dsup+Melanin+Jel", color='green')
-    ax1.plot(kontrol, label="Kontrol", linestyle='--', color='red')
-    ax1.set_xlabel("Döngü")
-    ax1.set_ylabel("Hayatta Kalma (%)")
-    ax1.legend()
-    st.pyplot(fig1)
+    if deney and kontrol and len(deney) == len(kontrol):
+        st.subheader("🧬 Deney vs Kontrol")
+        fig1, ax1 = plt.subplots()
+        ax1.plot(deney, label="Dsup+Melanin+Jel", color='green')
+        ax1.plot(kontrol, label="Kontrol", linestyle='--', color='red')
+        ax1.set_xlabel("Döngü")
+        ax1.set_ylabel("Hayatta Kalma (%)")
+        ax1.legend()
+        st.pyplot(fig1)
 
-    # Genetik + Jel karşılaştırması
+    # Genetik + Jel Karşılaştırma
     st.subheader("🧪 Genetik + Jel Formu Karşılaştırması")
     no_gel = params.copy()
     no_gel['biofilm_density'] = 0.0
     no_gel['gel_thickness'] = 0.0
-    scenarios = {
-        "Dsup (Jelsiz)": run_simulation(no_gel, True, False),
-        "Dsup (Jelli)": run_simulation(params, True, False),
-        "Melanin (Jelsiz)": run_simulation(no_gel, False, True),
-        "Melanin (Jelli)": run_simulation(params, False, True),
-        "Dsup+Melanin (Jelsiz)": run_simulation(no_gel, True, True),
-        "Dsup+Melanin (Jelli)": run_simulation(params, True, True),
-    }
+    scenario_labels = [
+        "Dsup (Jelsiz)", "Dsup (Jelli)", "Melanin (Jelsiz)", "Melanin (Jelli)",
+        "Dsup+Melanin (Jelsiz)", "Dsup+Melanin (Jelli)"
+    ]
+    scenario_funcs = [
+        run_simulation(no_gel, True, False),
+        run_simulation(params, True, False),
+        run_simulation(no_gel, False, True),
+        run_simulation(params, False, True),
+        run_simulation(no_gel, True, True),
+        run_simulation(params, True, True)
+    ]
     fig2, ax2 = plt.subplots()
-    for label, curve in scenarios.items():
-        ax2.plot(curve, label=label, linestyle='-' if "Jelli" in label else '--')
+    for label, curve in zip(scenario_labels, scenario_funcs):
+        if curve and len(curve) == params['cycles']:
+            ax2.plot(curve, label=label, linestyle='-' if "Jelli" in label else '--')
     ax2.set_title("Genetik + Jel Etkisi")
     ax2.legend()
     st.pyplot(fig2)
 
     # Uzay kapsülü
-    st.subheader("🛰️ Uzay Kapsülü İç Jel Kaplama")
     kapsul_jelsiz = kapsul_simulasyon(False, params)
     kapsul_jelli = kapsul_simulasyon(True, params)
     df_kapsul = pd.DataFrame({
         'Kapsül Durumu': ['Jelsiz', 'İç Yüzey Jel'],
         'Hayatta Kalma (%)': [kapsul_jelsiz, kapsul_jelli]
     })
-    st.bar_chart(df_kapsul.set_index('Kapsül Durumu'))
+    if not df_kapsul.empty:
+        st.bar_chart(df_kapsul.set_index('Kapsül Durumu'))
 
     # Bitki kombinasyonları
     st.subheader("🌱 Bitki Koruma Kombinasyonları")
@@ -163,7 +162,8 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
         'Koruma': list(kombine_sonuclar.keys()),
         'Hayatta Kalma (%)': list(kombine_sonuclar.values())
     })
-    st.bar_chart(df_bitki.set_index("Koruma"))
+    if not df_bitki.empty:
+        st.bar_chart(df_bitki.set_index("Koruma"))
 
     # Astronot
     st.subheader("🧍 Astronot Kıyafeti: Jel ile Koruma")
@@ -173,7 +173,8 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
         'Astronot': ['Jelsiz Kıyafet', 'Jel Kaplamalı Kıyafet'],
         'Hayatta Kalma (%)': [astro_jelsiz, astro_jelli]
     })
-    st.bar_chart(df_astronaut.set_index("Astronot"))
+    if not df_astronaut.empty:
+        st.bar_chart(df_astronaut.set_index("Astronot"))
 
     # Literatür özeti
     st.markdown("### 📚 Akademik Bulgularla Karşılaştırma")
