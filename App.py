@@ -105,7 +105,6 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     ax2.legend()
     st.pyplot(fig2)
 
-    fig3, ax3 = plt.subplots()
-    ax3.plot(jelsiz_mikroorganizma, label="Jelsiz Formda Mikroorganizma", linestyle='--')
+    fig3, 
     ax3.plot(jelli_mikroorganizma, label="Jel Formunda Mikroorganizma", color='green')
     ax3.set_title("🧊 Mikroorganizmların Jelli ve Jelsiz Formunun Radyasyon Direncine Etkisi")
