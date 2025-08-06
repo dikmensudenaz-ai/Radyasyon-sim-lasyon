@@ -175,7 +175,7 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     ax4.legend(loc="lower left", bbox_to_anchor=(1.0, 0.2))
     ax4.grid(True)
     st.pyplot(fig4)
-    3️Uzay Kapsülü İç Yüzeyi Jel Uygulaması Simülasyonu
+    Uzay Kapsülü İç Yüzeyi Jel Uygulaması Simülasyonu
     st.subheader("🛰️ Uzay Kapsülü: Jel ile İç Yüzey Koruma Simülasyonu")
 
     def kapsul_simulasyon(jelli=False):
