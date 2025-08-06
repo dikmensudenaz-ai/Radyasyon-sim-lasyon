@@ -175,42 +175,7 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     ax4.legend(loc="lower left", bbox_to_anchor=(1.0, 0.2))
     ax4.grid(True)
     st.pyplot(fig4)
-    # ——————————————————————————
-    # ——————————————————————————
-    # 2️⃣ Astronot Kıyafeti Koruması Karşılaştırması
-    st.subheader("🧍‍♂️ Astronot Kıyafeti: Jel ile Koruma Simülasyonu")
-
-    def simulate_astronaut(jelli=False):
-        koruma_katsayisi = 0.35 if jelli else 1.0
-        dna_hasar = 0
-        for _ in range(params['cycles']):
-            etkili_radyasyon = radiation_level * koruma_katsayisi
-            dna_hasar += etkili_radyasyon * 0.6  # Radyasyon hasar katsayısı
-        return max(0, 100 - dna_hasar * 0.2)  # Hayatta kalma %'si gibi varsayım
-
-    astronot_jelsiz = simulate_astronaut(jelli=False)
-    astronot_jelli = simulate_astronaut(jelli=True)
-
-    df_astro = pd.DataFrame({
-        'Astronot Türü': ['Standart Kıyafet (Jelsiz)', 'Jel ile Güçlendirilmiş Kıyafet'],
-        'DNA Sağlık (%)': [astronot_jelsiz, astronot_jelli]
-    })
-
-    fig_astro, ax_astro = plt.subplots()
-    colors = ['gray', 'green']
-    bars = ax_astro.bar(df_astro['Astronot Türü'], df_astro['DNA Sağlık (%)'], color=colors)
-    ax_astro.set_ylim(0, 100)
-    ax_astro.set_ylabel("DNA Sağlık Oranı (%)")
-    ax_astro.set_title("🚀 Jel Takviyeli Kıyafetin Astronot DNA Korumasına Etkisi")
-
-    for bar in bars:
-        yval = bar.get_height()
-        ax_astro.text(bar.get_x() + bar.get_width()/2, yval + 2, f'{yval:.2f}%', ha='center')
-
-    st.pyplot(fig_astro)
-    # ——————————————————————————
-    # ——————————————————————————
-    # 3️⃣ Uzay Kapsülü İç Yüzeyi Jel Uygulaması Simülasyonu
+    3️⃣ Uzay Kapsülü İç Yüzeyi Jel Uygulaması Simülasyonu
     st.subheader("🛰️ Uzay Kapsülü: Jel ile İç Yüzey Koruma Simülasyonu")
 
     def kapsul_simulasyon(jelli=False):
@@ -242,7 +207,6 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
         ax_kapsul.text(bar.get_x() + bar.get_width()/2, height + 2, f"{height:.2f}%", ha='center')
 
     st.pyplot(fig_kapsul)
-    # ——————————————————————————
     # ——————————————————————————
     # 4️⃣ Bitki Kombinasyonlu Koruma Simülasyonu
     st.subheader("🌱 Bitki Koruma Kombinasyonları Simülasyonu")
@@ -283,4 +247,60 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
 
     st.pyplot(fig_bitki_koruma)
     # ——————————————————————————
-    
+        # ——————————————————————————
+    # 4️⃣ Bitki Kombinasyonlu Koruma Simülasyonu
+    st.subheader("🌱 Bitki Koruma Kombinasyonları Simülasyonu")
+
+    def bitki_kombinasyon_simulasyonu(sera_jeli=False, kok_jeli=False, kapsul_jeli=False):
+        total_protection = 1.0
+        if sera_jeli:
+            total_protection *= 0.6  # %40 azaltır
+        if kok_jeli:
+            total_protection *= 0.7  # %30 azaltır
+        if kapsul_jeli:
+            total_protection *= 0.5  # %50 azaltır
+        etkili_radyasyon = radiation_level * total_protection
+        hayatta_kalma = 100 - etkili_radyasyon * 0.4  # etki oranı
+        return max(0, hayatta_kalma)
+
+    scenarios = {
+        "🌱 A | Hiçbir Koruma Yok"              : bitki_kombinasyon_simulasyonu(False, False, False),
+        "🌱 B | Sadece Sera Jel Koruması"       : bitki_kombinasyon_simulasyonu(True, False, False),
+        "🌱 C | Sera + Kök Jel Koruması"        : bitki_kombinasyon_simulasyonu(True, True, False),
+        "🌱 D | Sera + Kök + Kapsül Koruması"   : bitki_kombinasyon_simulasyonu(True, True, True)
+    }
+
+    df_bitki_koruma = pd.DataFrame({
+        'Koruma Senaryosu': list(scenarios.keys()),
+        'Hayatta Kalma (%)': list(scenarios.values())
+    })
+
+    fig_bitki_koruma, ax = plt.subplots()
+    bars = ax.barh(df_bitki_koruma['Koruma Senaryosu'], df_bitki_koruma['Hayatta Kalma (%)'], color='seagreen')
+    ax.set_xlim(0, 100)
+    ax.set_xlabel("Hayatta Kalma Oranı (%)")
+    ax.set_title("🌿 Bitki Koruma Kombinasyonlarının Etkisi")
+
+    for bar in bars:
+        width = bar.get_width()
+        ax.text(width + 1, bar.get_y() + bar.get_height()/2, f'{width:.2f}%', va='center')
+
+    st.pyplot(fig_bitki_koruma)
+    # ——————————————————————————
+  # Astronot karşılaştırması
+    st.subheader("🧍 Astronot Kıyafeti: Jel ile Koruma Simülasyonu")
+    astronot_jelsiz = simulate_astronaut(jelli=False, radiation_level=params["radiation_level"], cycles=params["cycles"])
+    astronot_jelli = simulate_astronaut(jelli=True, radiation_level=params["radiation_level"], cycles=params["cycles"])
+
+    df_astronaut = pd.DataFrame({
+        'Astronot Kıyafeti': ['Jelsiz', 'Jelli'],
+        'Hayatta Kalma (%)': [astronot_jelsiz, astronot_jelli]
+    })
+    fig2, ax2 = plt.subplots()
+    bars = ax2.bar(df_astronaut['Astronot Kıyafeti'], df_astronaut['Hayatta Kalma (%)'], color=['gray', 'blue'])
+    ax2.set_ylim(0, 100)
+    for bar in bars:
+        yval = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2, yval + 2, f'{yval:.2f}%', ha='center')
+    ax2.set_title("Astronot Koruma Etkisi")
+    st.pyplot(fig2)
