@@ -130,7 +130,7 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     # Final Tablo
     st.markdown("### 📌 Final Sonuç Tablosu")
     st.table({
-        'Grup': ['Kontrol', 'Deney', 'Dsup', 'Melanin', 'Dsup+Melanin', 'Jelsiz', 'Jelli'],
+        'Grup': ['Kontrol', 'Deney', 'Dsup', 'Melanin', 'Dsup+Melanin', 'Jelsiz_mikroorganizma', 'Jelli_mikroorganizma'],
         'Hayatta Kalma (%)': [
             f"{kontrol[-1]:.2f}%", f"{deney[-1]:.2f}%", f"{dsup_only[-1]:.2f}%",
             f"{melanin_only[-1]:.2f}%", f"{dsup_melanin[-1]:.2f}%",
