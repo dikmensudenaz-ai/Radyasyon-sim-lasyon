@@ -161,3 +161,88 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
             f"{no_jel[-1]:.2f}%", f"{jel_korumali[-1]:.2f}%"
         ]
     })
+# 🌱 Bitki modeli
+class Bitki:
+    def __init__(self, jel_var=True, biofilm_density=1.2, gel_thickness=1.0):
+        self.jel_var = jel_var
+        self.biofilm_density = biofilm_density
+        self.gel_thickness = gel_thickness
+        self.radyasyon_koruma = 0.0
+        self.hayatta_kalma = 100.0
+
+    def radyasyon_maruz_kalma(self, radyasyon):
+        if self.jel_var:
+            koruma_faktoru = 1 - (self.biofilm_density * self.gel_thickness * 0.08)
+            koruma_faktoru = max(0.2, koruma_faktoru)
+        else:
+            koruma_faktoru = 1.0  # Hiç koruma yok
+
+        etkili_radyasyon = radyasyon * koruma_faktoru
+        self.hayatta_kalma -= etkili_radyasyon * 0.3
+        self.hayatta_kalma = max(self.hayatta_kalma, 0)
+
+# Bitki simülasyonu
+bitki_jelli = Bitki(jel_var=True, biofilm_density=biofilm_density, gel_thickness=gel_thickness)
+bitki_jelsiz = Bitki(jel_var=False)
+
+# Döngüye göre radyasyon veriliyor
+for _ in range(exposure_cycles):
+    bitki_jelli.radyasyon_maruz_kalma(radiation_level)
+    bitki_jelsiz.radyasyon_maruz_kalma(radiation_level)
+
+# 🌿 Sonuçları göster
+st.markdown("### 🌿 Bitki Kökü Simülasyonu")
+st.markdown("""
+Bu simülasyon, bitki köküne jel formunda uygulanmış radyasyon koruyucu mikroorganizmaların bitkiyi nasıl koruduğunu göstermektedir.
+""")
+
+df_bitki = pd.DataFrame({
+    'Kök Durumu': ['Jelsiz Kök', 'Jelli Kök (Biofilm)'],
+    'Hayatta Kalma (%)': [bitki_jelsiz.hayatta_kalma, bitki_jelli.hayatta_kalma]
+})
+
+# Grafik
+fig3, ax3 = plt.subplots()
+bar3 = ax3.bar(df_bitki['Kök Durumu'], df_bitki['Hayatta Kalma (%)'], color=['gray', 'green'])
+ax3.set_title("BiyoFilm Jel Uygulamasının Bitki Köküne Etkisi")
+ax3.set_ylabel("Hayatta Kalma Oranı (%)")
+ax3.set_ylim(0, 100)
+
+for bar in bar3:
+    height = bar.get_height()
+    ax3.text(bar.get_x() + bar.get_width()/2, height + 2, f"{height:.2f}%", ha='center')
+
+st.pyplot(fig3)
+# Jel ve jelsiz form karşılaştırması grafiği
+import pandas as pd
+
+# Sonuçlar (örnek değerler)
+formlar = ['Dsup+Melanin (Jelsiz)', 'Dsup+Melanin (Jelli)']
+hayatta_kalma = [68.33, 75.89]
+
+# DataFrame oluştur
+df_formlar = pd.DataFrame({
+    'Form': formlar,
+    'Hayatta Kalma (%)': hayatta_kalma
+})
+
+# Başlık ve açıklama
+st.markdown("### 📌 Jel ve Jelsiz Form Karşılaştırması")
+st.markdown("""
+Bu grafik, aynı genetik yapıdaki mikroorganizmaların jel (biyofilm) formuna geçtiğinde
+radyasyona karşı daha dayanıklı hale geldiklerini göstermektedir.
+""")
+
+# Grafik çizimi
+fig2, ax2 = plt.subplots()
+bars = ax2.bar(df_formlar['Form'], df_formlar['Hayatta Kalma (%)'], color=['orange', 'green'])
+ax2.set_ylabel('Hayatta Kalma Oranı (%)')
+ax2.set_title('Jel Formunun Etkisi')
+ax2.set_ylim(0, 100)
+
+# Bar üstüne yüzde yazısı
+for bar in bars:
+    height = bar.get_height()
+    ax2.text(bar.get_x() + bar.get_width()/2, height + 2, f'{height:.2f}%', ha='center')
+
+st.pyplot(fig2)
