@@ -106,8 +106,8 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     st.pyplot(fig2)
 
     fig3, ax3 = plt.subplots()
-    ax3.plot(jelsiz, label="Jelsiz", linestyle='--')
-    ax3.plot(jelli, label="Jelli", color='green')
+    ax3.plot(jelsiz, label="Jelsiz_mikroorganizma", linestyle='--')
+    ax3.plot(jelli, label="Jelli_mikroorganizma", color='green')
     ax3.set_title("🧊 Jel Uygulaması Etkisi")
     ax3.legend()
     st.pyplot(fig3)
