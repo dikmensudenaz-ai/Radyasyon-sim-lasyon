@@ -175,9 +175,7 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
     ax4.legend(loc="lower left", bbox_to_anchor=(1.0, 0.2))
     ax4.grid(True)
     st.pyplot(fig4)
-    Uzay Kapsülü İç Yüzeyi Jel Uygulaması Simülasyonu
-    st.subheader("🛰️ Uzay Kapsülü: Jel ile İç Yüzey Koruma Simülasyonu")
-
+    st.subheader("🛰️ Uzay Kapsülü: Jel ile İç Yüzey Koruma Simülasyonu"),
     def kapsul_simulasyon(jelli=False):
         kapsul_koruma = 0.4 if jelli else 1.0  # %60 oranında radyasyon absorbe eder
         toplam_hasar = 0
