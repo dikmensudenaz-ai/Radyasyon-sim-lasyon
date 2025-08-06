@@ -10,17 +10,25 @@ class Mikroorganizma:
         self.survival_rate = 100
         self.dna_damage = 0
 
+        # Genlere bağlı DNA tamir oranı
+        if self.dsup:
+            self.repair_efficiency = 0.25  # Dsup varsa %25 onarım
+        elif self.melanin:
+            self.repair_efficiency = 0.15  # Melanin varsa %15 onarım
+        else:
+            self.repair_efficiency = 0.05  # Hiçbiri yoksa %5 onarım
+
     def radiation_exposure(self, radiation_level):
         resistance = 1
         damage_factor = 1
 
         if self.dsup:
-            resistance *= 2.5  # Dsup geni DNA koruması sağlar
-            damage_factor *= 0.4  # DNA hasarını azaltır
+            resistance *= 2.5
+            damage_factor *= 0.4
 
         if self.melanin:
-            resistance *= 1.8  # Melanin radyasyonu emer
-            damage_factor *= 0.6  # DNA hasarını azaltır
+            resistance *= 1.8
+            damage_factor *= 0.6
 
         damage = radiation_level / resistance
         dna_damage_increment = (radiation_level * damage_factor) / resistance
@@ -28,7 +36,10 @@ class Mikroorganizma:
         self.dna_damage += dna_damage_increment
         self.survival_rate -= damage
 
-        # Hücre ölümü simülasyonu
+        # DNA tamiri uygulanıyor
+        self.dna_damage -= self.dna_damage * self.repair_efficiency
+        self.dna_damage = max(self.dna_damage, 0)
+
         if self.dna_damage >= 100:
             self.survival_rate = 0
 
@@ -37,7 +48,6 @@ class Mikroorganizma:
 # Streamlit Arayüzü
 st.title("🧬 Detaylı Gen Aktarım ve Radyasyon Direnci Simülasyonu")
 
-# Kullanıcı girdileri
 st.sidebar.header("Simülasyon Parametreleri")
 dsup_gene = st.sidebar.checkbox("🧫 Dsup Geni")
 melanin_gene = st.sidebar.checkbox("🖤 Melanin Geni")
@@ -46,9 +56,7 @@ cell_count = st.sidebar.number_input("🦠 Hücre Sayısı", min_value=50, max_v
 exposure_cycles = st.sidebar.slider("🔄 Maruziyet Döngüleri", min_value=5, max_value=20, value=10)
 
 if st.sidebar.button("🚀 Detaylı Simülasyonu Başlat"):
-    # Deney grubu
     test_cells = [Mikroorganizma(dsup_gene, melanin_gene) for _ in range(cell_count)]
-    # Kontrol grubu
     control_cells = [Mikroorganizma(False, False) for _ in range(cell_count)]
 
     test_survival_rates, control_survival_rates = [], []
@@ -65,7 +73,6 @@ if st.sidebar.button("🚀 Detaylı Simülasyonu Başlat"):
         test_survival_rates.append(test_avg_survival)
         control_survival_rates.append(control_avg_survival)
 
-    # Grafik oluşturma
     fig, ax = plt.subplots()
     ax.plot(range(1, exposure_cycles + 1), test_survival_rates, marker='o', linestyle='-', color='blue', label='Deney Grubu')
     ax.plot(range(1, exposure_cycles + 1), control_survival_rates, marker='x', linestyle='--', color='red', label='Kontrol Grubu')
@@ -78,7 +85,6 @@ if st.sidebar.button("🚀 Detaylı Simülasyonu Başlat"):
 
     st.pyplot(fig)
 
-    # Sonuçların tablolaştırılması
     st.markdown("## 📊 Ayrıntılı Analiz ve Sonuçlar")
 
     final_test_survival = test_survival_rates[-1]
