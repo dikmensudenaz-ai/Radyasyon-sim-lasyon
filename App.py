@@ -134,6 +134,6 @@ if st.sidebar.button("🚀 Simülasyonu Başlat"):
         'Hayatta Kalma (%)': [
             f"{kontrol[-1]:.2f}%", f"{deney[-1]:.2f}%", f"{dsup_only[-1]:.2f}%",
             f"{melanin_only[-1]:.2f}%", f"{dsup_melanin[-1]:.2f}%",
-            f"{jelsiz[-1]:.2f}%", f"{jelli[-1]:.2f}%"
+            f"{jelsiz_mikroorganizma[-1]:.2f}%", f"{jelli[-1]:.2f}%"
         ]
     })
