@@ -451,8 +451,9 @@ def ai_yorumlama(grafik_adi, sonuc_verisi, kaynaklar):
     sonuc_verisi = {
     "kontrol": control[-1],
     "jel": jel_test[-1],
-    "dsup_melanin": dsup_melanin_test[-1]}
-ai_yorumlama("mikroorganizma", sonuc_verisi, kaynaklar=[
+    "dsup_melanin": dsup_melanin_test[-1] if dsup_melanin_test else 0
+    }
+ai_yorumlama("mikroorganizma",sonuc_verisi, kaynaklar=[
     "Hashimoto et al., 2016", 
     "Dadachova et al., 2007"
 ])
