@@ -446,38 +446,45 @@ def ai_yorumlama(grafik_adi, sonuc_verisi, kaynaklar):
         yorum += f"🌿 Farklı kombinasyonlar arasında en etkili senaryo 'Sera + Kök + Kapsül' koruması olmuştur."
         yorum += "\n\n🔬 Bu sonuç, Smith et al. (2019) çalışmasında öne çıkan kombine koruma stratejileriyle uyumludur."
 
-    st.markdown("### 🤖 AI Yorumlama Paneli")
-    st.info(yorum)
-    sonuc_verisi = {
-    "kontrol": control[-1],
-    "jel": jel_test[-1],
-    "dsup_melanin": (dsup_melanin_test[-1] if dsup_melanin_test else 0)
-    }
-ai_yorumlama( "mikroorganizma", sonuc_verisi, kaynaklar=[
-    "Hashimoto et al., 2016", 
-    "Dadachova et al., 2007"
-])
-def bitki_urun_kalitesi_tahmini(dna_hasar_orani, radyasyon, koruma_etiketi):
-    büyüme_orani = max(0, 100 - (dna_hasar_orani * 0.6))
-    urun_kalitesi = max(0, büyüme_orani - (radyasyon / 2))
-    mutasyon_riski = min(100, dna_hasar_orani * 1.2)
-    return {
-        "koruma": koruma_etiketi,
-        "büyüme": büyüme_orani,
-        "kalite": urun_kalitesi,
-        "mutasyon": mutasyon_riski
-    }
+    st.markdown("### 🧠 AI Yorumlama Paneli")
+yorum = ""
 
-# Örnek veri ile çalıştırma
-sonuclar = [
-    bitki_urun_kalitesi_tahmini(25, 40, "Kök + Sera Jel"),
-    bitki_urun_kalitesi_tahmini(45, 60, "Sadece Sera Jel"),
-    bitki_urun_kalitesi_tahmini(70, 100, "Korumasız"),
-]
+try:
+    if grafik_adi == "mikroorganizma":
+        if "jel" in sonuc_verisi and "kontrol" in sonuc_verisi:
+            if isinstance(sonuc_verisi["jel"], (int, float)) and isinstance(sonuc_verisi["kontrol"], (int, float)):
+                if sonuc_verisi["jel"] > sonuc_verisi["kontrol"]:
+                    yorum += "🟢 **Jel koruması**, mikroorganizmanın hayatta kalım oranını artırmıştır. \n\n"
 
-# Görselleştirme
-df_urun = pd.DataFrame(sonuclar)
+        if "dsup_melanin" in sonuc_verisi:
+            if isinstance(sonuc_verisi["dsup_melanin"], (int, float)) and sonuc_verisi["dsup_melanin"] > 0:
+                yorum += "🧬 **Dsup ve melanin kombinasyonu**, en yüksek koruma seviyesine ulaşmıştır.\n\n"
+                yorum += "📚 Bu durum, **Hashimoto et al. (2016)** ve **Dadachova et al. (2007)** çalışmalarıyla uyumludur."
 
+    elif grafik_adi == "bitki":
+        if "koku_jel" in sonuc_verisi and "korumasiz" in sonuc_verisi:
+            if isinstance(sonuc_verisi["koku_jel"], (int, float)) and isinstance(sonuc_verisi["korumasiz"], (int, float)):
+                if sonuc_verisi["koku_jel"] > sonuc_verisi["korumasiz"]:
+                    yorum += "🌱 **Kök jel uygulaması**, bitkinin radyasyona karşı dayanıklılığını artırmıştır.\n\n"
+
+        if "kapsul_sera_jel" in sonuc_verisi and "koku_jel" in sonuc_verisi:
+            if isinstance(sonuc_verisi["kapsul_sera_jel"], (int, float)) and isinstance(sonuc_verisi["koku_jel"], (int, float)):
+                if sonuc_verisi["kapsul_sera_jel"] > sonuc_verisi["koku_jel"]:
+                    yorum += "🔵 **Sera + kapsül jel koruması**, maksimum verimi sağlamıştır.\n\n"
+                    yorum += "📚 Smith et al. (2019)’da tanımlanan kombinasyon stratejileriyle uyumludur."
+
+    elif grafik_adi == "astronot":
+        if "jelili" in sonuc_verisi and "jelsiz" in sonuc_verisi:
+            if isinstance(sonuc_verisi["jelili"], (int, float)) and isinstance(sonuc_verisi["jelsiz"], (int, float)):
+                if sonuc_verisi["jelili"] > sonuc_verisi["jelsiz"]:
+                    yorum += "🧑‍🚀 **Jelli kıyafet uygulaması**, DNA hasarını azaltarak hayatta kalımı artırmıştır.\n\n"
+                    yorum += "📚 Güncel NASA radyasyon kıyafet testleriyle örtüşmektedir."
+
+except Exception as e:
+    yorum = f"❌ AI yorumlama sırasında bir hata oluştu: {str(e)}"
+
+# Gösterim
+st.info(yorum)
 st.subheader("🌿 Bitki Ürün Kalitesi Tahmini")
 fig, ax = plt.subplots(figsize=(10, 5))
 bar1 = ax.bar(df_urun["koruma"], df_urun["büyüme"], label="Büyüme Oranı (%)")
