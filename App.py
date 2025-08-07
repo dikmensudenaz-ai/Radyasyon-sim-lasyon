@@ -421,7 +421,7 @@ def ai_yorumlama(grafik_adi, sonuc_verisi, kaynaklar):
     yorum = ""
 
     if grafik_adi == "mikroorganizma":
-        if sonuc_verisi["jel"] > sonuc_verisi["kontrol"]:
+        if sonuc_verisi["jel"] > sonuc_verisi["jelsiz"]:
             yorum += f"🧬 Jel koruması mikroorganizma hayatta kalımını ciddi oranda artırmıştır. "
         if sonuc_verisi["dsup_melanin"] > sonuc_verisi["jel"]:
             yorum += f"Dsup ve melanin kombinasyonu ile hayatta kalım zirveye ulaşmıştır."
@@ -453,7 +453,7 @@ def ai_yorumlama(grafik_adi, sonuc_verisi, kaynaklar):
     "jel": jel_test[-1],
     "dsup_melanin": (dsup_melanin_test[-1] if dsup_melanin_test else 0)
     }
-ai_yorumlama( "mikroorganizma", "sonuc_verisi", kaynaklar=[
+ai_yorumlama( "mikroorganizma", sonuc_verisi, kaynaklar=[
     "Hashimoto et al., 2016", 
     "Dadachova et al., 2007"
 ])
