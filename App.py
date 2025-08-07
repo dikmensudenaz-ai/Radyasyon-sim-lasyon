@@ -453,10 +453,10 @@ def ai_yorumlama(grafik_adi, sonuc_verisi, kaynaklar):
     "jel": jel_test[-1],
     "dsup_melanin": dsup_melanin_test[-1] if dsup_melanin_test else 0
     }
-ai_yorumlama("mikroorganizma, sonuc_verisi, kaynaklar=[
+ai_yorumlama(mikroorganizma, sonuc_verisi, kaynaklar=[
     "Hashimoto et al., 2016", 
     "Dadachova et al., 2007"
-]")
+])
 def bitki_urun_kalitesi_tahmini(dna_hasar_orani, radyasyon, koruma_etiketi):
     büyüme_orani = max(0, 100 - (dna_hasar_orani * 0.6))
     urun_kalitesi = max(0, büyüme_orani - (radyasyon / 2))
