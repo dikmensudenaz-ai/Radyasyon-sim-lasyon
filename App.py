@@ -539,7 +539,8 @@ st.markdown("📚 **Kaynaklar:**")
 st.markdown("- Zhang et al., 2020, *Life Sciences in Space Research*, Mars görevinde ölçülen dozlar")
 st.markdown("- Sharma et al., 2022")
 st.markdown("### 🤖 AI Destekli Yorumlama")
-st.info(f"Jelli kıyafet, jelsiz kıyafete kıyasla %{'{:.2f}'.format(suit_jelled - suit_plain)} daha fazla koruma sağlamıştır. Bu, uzun görevlerde DNA stabilitesini sürdürmek açısından import streamlit as st
+st.info(f"Jelli kıyafet, jelsiz kıyafete kıyasla %{'{:.2f}'.format(suit_jelled - suit_plain)} daha fazla koruma sağlamıştır. Bu, uzun görevlerde DNA stabilitesini sürdürmek açısından kritiktir.")
+import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
 
